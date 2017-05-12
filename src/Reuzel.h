@@ -42,6 +42,7 @@ namespace Reuzel {
         static void move2Busy(const pthread_t pid);
         static void move2Idle(const pthread_t pid);
 
+        static pthread_mutex_t output_mutex;
         static vector<pthread_t> busy;
         static vector<pthread_t> idle;
     private:
@@ -51,7 +52,7 @@ namespace Reuzel {
         pthread_t *ptid;
         static pthread_mutex_t mutex;
         static pthread_cond_t cond;
-        static pthread_mutex_t list_mutex;
+        static pthread_mutex_t task_list_mutex;
     };
 }
 
