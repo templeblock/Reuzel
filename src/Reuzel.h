@@ -48,7 +48,9 @@ namespace Reuzel {
 
     private:
         bool isFull() const;
-        static void *runInThread(void *arg);
+        // FIXME
+        void *runInThread(void *arg);
+        void runInThreadAux();
         Task take();
 
         mutable pthread_mutex_t mutex_;

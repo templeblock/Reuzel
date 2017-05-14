@@ -16,7 +16,7 @@ ThreadPool::ThreadPool(const string &nameArg)
     pthread_cond_init(&notFull_, NULL);
     name_ = nameArg;
     maxQueueSize_ = 0;
-    running_ = false;
+    running_  = false;
 }
 
 ThreadPool::~ThreadPool()
@@ -33,7 +33,8 @@ void ThreadPool::start(int numThreads)
     threads_.reserve(numThreads);
     for (int i = 0; i != numThreads; ++i) {
         pthread_t tmp;
-        pthread_create(&tmp, NULL, runInThread, NULL);
+        // FIXME
+        //pthread_create(&tmp, NULL, )
         threads_.push_back(tmp);
     }
 
