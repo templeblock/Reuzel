@@ -1,10 +1,10 @@
 //
-// Reuzel.h
+// ThreadPool.cpp
 //
 // Copyright (c) 2017 Jiawei Feng
 //
 
-#include "Reuzel.h"
+#include "ThreadPool.h"
 #include <assert.h>
 #include <functional>
 

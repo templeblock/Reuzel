@@ -1,5 +1,5 @@
 //
-// Reuzel.h
+// ThreadPool.h
 //
 // Copyright (c) 2017 Jiawei Feng
 //
