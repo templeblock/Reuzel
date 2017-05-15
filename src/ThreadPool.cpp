@@ -25,6 +25,13 @@ ThreadPool::ThreadPool(const string &nameArg)
     running_ = false;
 }
 
+ThreadPool::~ThreadPool()
+{
+    if (running_) {
+        stop();
+    }
+}
+
 void ThreadPool::start(int numThreads)
 {
     assert(threads_.empty());
@@ -33,11 +40,13 @@ void ThreadPool::start(int numThreads)
 
     for (int i = 0; i < numThreads; ++i) {
         threads_.push_back(Thread(std::bind(&ThreadPool::runInThread, this)));
+        threads_[i].start();
     }
-
+    /*
     if (numThreads == 0 && threadInitCallback_) {
         threadInitCallback_();
     }
+    */
 }
 
 void ThreadPool::stop()
@@ -58,7 +67,7 @@ size_t ThreadPool::queueSize() const
     pthread_mutex_unlock(&mutex_);
 }
 
-void ThreadPool::run(const Task &task)
+void ThreadPool::addTask(const Task &task)
 {
     if (threads_.empty()) {
         task();
@@ -77,7 +86,7 @@ void ThreadPool::run(const Task &task)
     }
 }
 
-ThreadPool::Task ThreadPool::take()
+ThreadPool::Task ThreadPool::takeTask()
 {
     pthread_mutex_lock(&mutex_);
     while (taskQueue_.empty() && running_) {
@@ -106,11 +115,13 @@ bool ThreadPool::isFull() const
 void ThreadPool::runInThread()
 {
     try {
+        /*
         if (threadInitCallback_) {
             threadInitCallback_();
         }
+        */
         while (running_) {
-            Task task(take());
+            Task task(takeTask());
             if (task) {
                 task();
             }

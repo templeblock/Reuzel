@@ -23,6 +23,18 @@ namespace Reuzel {
 
         explicit ThreadPool(const string &nameArg =
                             "Reuzel ThreadPool");
+        ~ThreadPool();
+
+        void setMaxQueueSize(int maxSize)
+        {
+            maxQueueSize_ = maxSize;
+        }
+        /*
+        void setThreadInitCallback(const Task &cb)
+        {
+            threadInitCallback_ = cb;
+        }
+        */
 
         void start(int numThreads);
         void stop();
@@ -34,18 +46,18 @@ namespace Reuzel {
 
         size_t queueSize() const;
 
-        void run(const Task &task);
+        void addTask(const Task &task);
 
     private:
         bool isFull() const;
         void runInThread();
-        Task take();
+        Task takeTask();
 
         mutable pthread_mutex_t mutex_;
         pthread_cond_t notEmpty_;
         pthread_cond_t notFull_;
         string name_;
-        Task threadInitCallback_;
+        //Task threadInitCallback_;
         std::vector<Thread> threads_;
         std::deque<Task> taskQueue_;
         size_t maxQueueSize_;
