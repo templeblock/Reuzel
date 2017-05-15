@@ -9,6 +9,9 @@
 
 #include <pthread.h>
 #include <functional>
+#include <assert.h>
+#include <exception>
+#include <iostream>
 
 namespace Reuzel {
     class Thread {
@@ -31,7 +34,19 @@ namespace Reuzel {
             return pthreadId_;
         }
 
+        void runInThread()
+        {
+            // FIXME: add assert
+            try {
+                func_();
+            }
+            catch (const std::exception &e) {
+                std::cerr << "exception caught in Thread "
+                          << pthreadId_ << std::endl;
 
+            abort();
+            }
+        }
     private:
         bool started_;
         bool joined_;

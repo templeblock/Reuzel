@@ -10,8 +10,12 @@
 
 using namespace Reuzel;
 
-// FIXME
-static void *startThread(void *arg);
+static void *startThread(void *arg)
+{
+    Thread *thread = static_cast<Thread *>(arg);
+    thread->runInThread();
+    return NULL;
+}
 
 Thread::Thread(const ThreadFunc &func)
   : started_(false),
@@ -33,7 +37,7 @@ void Thread::start()
     assert(!started_);
     started_ = true;
 
-    if (pthread_create(&pthreadId_, NULL, startThread, NULL) != 0) {
+    if (pthread_create(&pthreadId_, NULL, startThread, this) != 0) {
         started_ = false;
         // FIXME: Add lock
         std::cerr << "Failed in pthread_create" << std::endl;
