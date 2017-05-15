@@ -1,3 +1,9 @@
+//
+// test.cpp
+//
+// Copyright (c) 2017 Jiawei Feng
+//
+
 #include "../src/ThreadPool.h"
 #include <iostream>
 #include <pthread.h>
