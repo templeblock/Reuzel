@@ -4,15 +4,24 @@
 #include <string>
 #include <unistd.h>
 
+#include <sys/types.h>
+
+pthread_mutex_t outputMutex= PTHREAD_MUTEX_INITIALIZER;
+
 void print()
 {
-    std::cout << "current pthread=" << pthread_self() << std::endl;
+    pthread_mutex_lock(&outputMutex);
+    std::cout << "current pthread = " << pthread_self() << std::endl;
+    pthread_mutex_unlock(&outputMutex);
 }
 
-void printString(const std::string &str)
+void printString(const std::string &taskId)
 {
-    std::cout << str << std::endl;
-    usleep(100 * 1000);
+    pthread_mutex_lock(&outputMutex);
+    std::cout << "current pthread = " << pthread_self() << " ";
+    std::cout << taskId << std::endl;
+    usleep(50 * 1000);
+    pthread_mutex_unlock(&outputMutex);
 }
 
 void test(int maxSize)
@@ -23,21 +32,30 @@ void test(int maxSize)
     pool.setMaxQueueSize(maxSize);
     pool.start(5);
 
-    std::cout << "Adding task" << std::endl;
+    pthread_mutex_lock(&outputMutex);
+    std::cout << "Adding print task" << std::endl;
+    pthread_mutex_unlock(&outputMutex);
     pool.addTask(print);
     pool.addTask(print);
 
+    pthread_mutex_lock(&outputMutex);
+    std::cout << "Adding printString task" << std::endl;
+    pthread_mutex_unlock(&outputMutex);
     for (int i = 0; i < 100; ++i) {
-        std::string tmp("current thread=");
-        tmp += std::to_string(pthread_self());
-        tmp += " sleep version";
-        pool.addTask(std::bind(printString, tmp));
+        std::string taskId("task - ");
+        taskId += std::to_string(i);
+        pool.addTask(std::bind(printString, taskId));
     }
+    sleep(8);  // wait for all threads join
 
     pool.stop();
 }
 
 int main()
 {
+    test(0);
+    test(1);
     test(5);
+    test(10);
+    test(50);
 }
