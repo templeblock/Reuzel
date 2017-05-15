@@ -7,16 +7,13 @@
 #include "ThreadPool.h"
 #include <assert.h>
 #include <functional>
+#include <algorithm>
+#include <exception>
+#include <iostream>
 
 using namespace Reuzel;
 using std::placeholders::_1;
 
-static void *runInThread(void *arg)
-{
-    try {
-        if ()
-    }
-}
 
 ThreadPool::ThreadPool(const string &nameArg)
 {
@@ -35,9 +32,7 @@ void ThreadPool::start(int numThreads)
     threads_.reserve(numThreads);
 
     for (int i = 0; i < numThreads; ++i) {
-        pthread_t tmp;
-        pthread_create(&tmp, NULL, runInThread, NULL);
-        threads_.push_back(tmp);
+        threads_.push_back(Thread(std::bind(&ThreadPool::runInThread, this)));
     }
 
     if (numThreads == 0 && threadInitCallback_) {
@@ -52,9 +47,8 @@ void ThreadPool::stop()
     pthread_cond_broadcast(&notEmpty_);
     pthread_mutex_unlock(&mutex_);
 
-    for (auto thread : threads_) {
-        pthread_join(thread, NULL);
-    }
+    std::for_each(threads_.begin(), threads_.end(),
+                   std::bind(&Thread::join, std::placeholders::_1));
 }
 
 size_t ThreadPool::queueSize() const
@@ -107,4 +101,23 @@ ThreadPool::Task ThreadPool::take()
 bool ThreadPool::isFull() const
 {
     return maxQueueSize_ > 0 && taskQueue_.size() >= maxQueueSize_;
+}
+
+void ThreadPool::runInThread()
+{
+    try {
+        if (threadInitCallback_) {
+            threadInitCallback_();
+        }
+        while (running_) {
+            Task task(take());
+            if (task) {
+                task();
+            }
+        }
+    }
+    catch (const std::exception &e) {
+        std::cerr << "exception caught in ThreadPool" << name_ << std::endl;
+        abort();
+    }
 }

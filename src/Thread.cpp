@@ -37,6 +37,7 @@ void Thread::start()
     assert(!started_);
     started_ = true;
 
+    // FIXME: this
     if (pthread_create(&pthreadId_, NULL, startThread, this) != 0) {
         started_ = false;
         // FIXME: Add lock
@@ -50,4 +51,17 @@ int Thread::join()
     assert(!joined_);
     joined_ = true;
     return pthread_join(pthreadId_, NULL);
+}
+
+void Thread::runInThread()
+{
+    // FIXME: add assert
+    try {
+        func_();
+    }
+    catch (const std::exception &e) {
+        std::cerr << "exception caught in Thread "
+                  << pthreadId_ << std::endl;
+        abort();
+    }
 }

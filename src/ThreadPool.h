@@ -12,6 +12,7 @@
 #include <deque>
 #include <functional>
 #include <string>
+#include "Thread.h"
 
 using std::string;
 
@@ -37,7 +38,7 @@ namespace Reuzel {
 
     private:
         bool isFull() const;
-        //void *runInThread(void *arg);
+        void runInThread();
         Task take();
 
         mutable pthread_mutex_t mutex_;
@@ -45,7 +46,7 @@ namespace Reuzel {
         pthread_cond_t notFull_;
         string name_;
         Task threadInitCallback_;
-        std::vector<pthread_t> threads_;
+        std::vector<Thread> threads_;
         std::deque<Task> taskQueue_;
         size_t maxQueueSize_;
         bool running_;
