@@ -37,10 +37,8 @@ void Thread::start()
     assert(!started_);
     started_ = true;
 
-    // FIXME: this
     if (pthread_create(&pthreadId_, NULL, startThread, this) != 0) {
         started_ = false;
-        // FIXME: Add lock
         std::cerr << "Failed in pthread_create" << std::endl;
     }
 }
