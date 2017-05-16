@@ -25,6 +25,9 @@ namespace Reuzel {
                             "Reuzel ThreadPool");
         ~ThreadPool();
 
+        ThreadPool(const ThreadPool&) = delete;
+        ThreadPool &operator=(const ThreadPool&) = delete;
+
         void setMaxQueueSize(int maxSize)
         {
             maxQueueSize_ = maxSize;
