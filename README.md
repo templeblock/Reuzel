@@ -15,9 +15,11 @@ The thread pool uses C++11 syntax and POSIX Threads so if you compile with g++ o
     g++ -std=c++11 ThreadPool.cpp Thread.cpp example.cpp -lpthread -o example
 
 Then run the executable like this:
+
     ./example
 
 if you want to run the test example:
+
     make
     ./Reuzel
 
