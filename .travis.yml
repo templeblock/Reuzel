@@ -1,8 +1,0 @@
-language: cpp
-
-branches:
-  only:
-    - master
-
-script:
-    - make
